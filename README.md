@@ -2,7 +2,7 @@
 Projeto 2
 
 # Integrantes
-- Antônio Bahia Fonseca Moraes;
+- Antônio Bahia Fonseca Moraes
 - Cecília Gio Alonso Gonçalves
 - Felipe Morita de Almeida Braga
 - João Pedro Brandão de Moura
