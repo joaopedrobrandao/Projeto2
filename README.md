@@ -1,4 +1,4 @@
-# Dendem
+# Dendem :herb:
 O “Dendem” é uma aplicação web que funciona como ferramenta facilitadora da colaboração entre pesquisadores da Natura e agricultores associados a fim de pesquisas para o desenvolvimento de produtos da empresa.
 
 <img width="200" alt="Logo_Dendem" src="https://user-images.githubusercontent.com/123978295/236903975-0e3df2ca-eb04-4b65-aebe-7d994487f483.png">
@@ -10,7 +10,7 @@ Essas funcionalidades são favorecidas, ainda, pela opção de preenchimento de 
 
 
 
-## Integrantes
+## Integrantes :busts_in_silhouette:
 - Antônio Bahia Fonseca Moraes
 - Cecília Gio Alonso Gonçalves
 - Felipe Morita de Almeida Braga
@@ -18,3 +18,5 @@ Essas funcionalidades são favorecidas, ainda, pela opção de preenchimento de 
 - Laura Padilha Bueno
 - Luigi Otávio Neves Macedo
 - Raí de Oliveira Cajé
+
+## Histórico de lançamentos :calendar:
