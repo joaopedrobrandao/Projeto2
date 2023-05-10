@@ -1,77 +1,66 @@
 import { Router } from "express";
-import sqlite3 from "sqlite3";
-import DBPATH from "../shared/dbConnection.js";
 import createCampo from "./useCases/create.usecase.js";
+import getCampo from "./useCases/get.usecase.js";
+import getAllCampos from "./useCases/getAll.usecase.js";
+import updateCampo from "./useCases/update.usecase.js";
+import deleteCampo from "./useCases/delete.usecase.js";
 
 const campoRouter = Router();
 
 // TABELA CAMPO
 // Insere um registro (é o C do CRUD - Create)
-campoRouter.post("/", (req, res) => {
+campoRouter.post("/", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
 
-  const result = createCampo(req.body);
+  const result = await createCampo(req.body);
+
+  res.json(result);
+  res.end();
+});
+
+// Retorna um registro especifico ou todos os registros (é o R do CRUD - Read)
+campoRouter.get("/:campo_id", async (req, res) => {
+  res.statusCode = 200;
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  const result = await getCampo(req.params.campo_id);
 
   res.json(result);
   res.end();
 });
 
 // Retorna todos registros (é o R do CRUD - Read)
-campoRouter.get("/", (req, res) => {
+campoRouter.get("/", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
-  let db = new sqlite3.Database(DBPATH); // Abre o banco
-  let sql = "SELECT * FROM CAMPO WHERE campo_id = " + req.query.campo_id;
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      throw err;
-    }
-    res.json(rows);
-  });
-  db.close(); // Fecha o banco
+
+  const result = await getAllCampos();
+
+  res.json(result);
+  res.end();
 });
 
 // Atualiza um registro (é o U do CRUD - Update)
-campoRouter.put("/", (req, res) => {
+campoRouter.put("/:campo_id", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
-  sql =
-    "UPDATE CAMPO SET categoria ='" +
-    req.body.categoria +
-    "', nome = '" +
-    req.body.nome +
-    "' WHERE campo_id='" +
-    req.body.campo_id +
-    "'";
-  console.log(sql);
-  var db = new sqlite3.Database(DBPATH); // Abre o banco
-  db.run(sql, [], (err) => {
-    if (err) {
-      throw err;
-    }
-    res.json(sql);
-    res.end();
-  });
-  res.write('<p>CAMPO ATUALIZADO COM SUCESSO!</p><a href="/">VOLTAR</a>');
-  db.close(); // Fecha o banco
+
+  const result = await updateCampo(req.params.campo_id, req.body);
+
+  res.json(result);
+  res.end();
 });
 
 // Exclui um registro (é o D do CRUD - Delete)
-campoRouter.delete("/", (req, res) => {
+campoRouter.delete("/:campo_id", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
-  sql = "DELETE FROM CAMPO WHERE campo_id='" + req.query.campo_id + "'";
-  console.log(sql);
-  var db = new sqlite3.Database(DBPATH); // Abre o banco
-  db.run(sql, [], (err) => {
-    if (err) {
-      throw err;
-    }
-    res.write('<p>CAMPO REMOVIDO COM SUCESSO!</p><a href="/">VOLTAR</a>');
-    res.end();
-  });
-  db.close(); // Fecha o banco
+
+  const result = await deleteCampo(req.params.campo_id);
+
+  res.json(result);
+  res.end();
 });
 
 export default campoRouter;

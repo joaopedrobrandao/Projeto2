@@ -1,16 +1,9 @@
 import sqlite3 from "sqlite3";
 import DBPATH from "../../shared/dbConnection.js";
 
-const createCampo = async (data) => {
+const getAllCampos = async () => {
   let db = new sqlite3.Database(DBPATH); // Abre o banco
-  let sql =
-    "INSERT INTO campo (etapa_id, categoria, nome) VALUES (" +
-    data.etapa_id +
-    ", '" +
-    data.categoria +
-    "', '" +
-    data.nome +
-    "') RETURNING *";
+  let sql = "SELECT * FROM CAMPO";
 
   const query = new Promise((resolve, reject) => {
     db.all(sql, [], (err, rows) => {
@@ -33,4 +26,4 @@ const createCampo = async (data) => {
   return null;
 };
 
-export default createCampo;
+export default getAllCampos;

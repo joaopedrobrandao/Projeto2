@@ -1,69 +1,44 @@
 import { Router } from "express";
 import sqlite3 from "sqlite3";
 import DBPATH from "../shared/dbConnection.js";
+import getSpecificAmostra from "./useCases/getSpecific.usecase.js";
+import createAmostra from "./useCases/create.usecase.js";
+import updateAmostra from "./useCases/update.usecase.js";
 
 const amostrasRouter = Router();
 
 //TABELA AMOSTRA - consulta
 // Insere um registro (é o C do CRUD - Create)
-amostrasRouter.post("/", (req, res) => {
+amostrasRouter.post("/", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
-  var db = new sqlite3.Database(DBPATH); // Abre o banco
-  let sql =
-    "INSERT INTO AMOSTRA (coletor_id, protocolo_id) VALUES ('" +
-    req.body.coletor_id +
-    "', '" +
-    req.body.protocolo_id +
-    ")";
-  db.run(sql, [], (err) => {
-    if (err) {
-      throw err;
-    }
-  });
-  res.write('<p>AMOSTRA INSERIDA COM SUCESSO!</p><a href="/">VOLTAR</a>');
-  db.close(); // Fecha o banco
+
+  const result = await createAmostra(req.body);
+
+  res.json(result[0]);
   res.end();
 });
 
 // Retorna todos registros (é o R do CRUD - Read)
-amostrasRouter.get("/", (req, res) => {
+amostrasRouter.get("/:amostra_id", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
-  var db = new sqlite3.Database(DBPATH); // Abre o banco
-  var sql = "SELECT * FROM AMOSTRA WHERE amostra_id = " + req.query.amostra_id;
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      throw err;
-    }
-    res.json(rows);
-  });
-  db.close(); // Fecha o banco
+
+  const result = await getSpecificAmostra(req.params.amostra_id);
+
+  res.json(result);
+  res.end();
 });
 
 // Atualiza um registro (é o U do CRUD - Update)
-amostrasRouter.put("/", (req, res) => {
+amostrasRouter.put("/:amostra_id", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
-  let sql =
-    "UPDATE AMOSTRA SET coletor_id ='" +
-    req.body.coletor_id +
-    "', protocolo_id = '" +
-    req.body.protocolo_id +
-    "' WHERE amostra_id='" +
-    req.body.amostra_id +
-    "'";
-  console.log(sql);
-  var db = new sqlite3.Database(DBPATH); // Abre o banco
-  db.run(sql, [], (err) => {
-    if (err) {
-      throw err;
-    }
-    res.json(sql);
-    res.end();
-  });
-  res.write('<p>AMOSTRA ATUALIZADO COM SUCESSO!</p><a href="/">VOLTAR</a>');
-  db.close(); // Fecha o banco
+
+  const result = await updateAmostra(req.body, req.params.amostra_id);
+
+  res.json(result);
+  res.end();
 });
 
 // Exclui um registro (é o D do CRUD - Delete)

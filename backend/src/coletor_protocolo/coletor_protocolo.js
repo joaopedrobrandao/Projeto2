@@ -4,7 +4,8 @@ import DBPATH from "../shared/dbConnection.js";
 
 const coletorProtocoloRouter = Router();
 
-//TABELA AMOSTRA - consulta
+//TABELA COLETOR - consulta
+// NÃO IMPLEMENTADO NO BANCO
 // Retorna todos registros (é o R do CRUD - Read)
 coletorProtocoloRouter.get("/", (req, res) => {
   res.statusCode = 200;

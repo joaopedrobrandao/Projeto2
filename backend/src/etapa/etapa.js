@@ -1,82 +1,54 @@
 import { Router } from "express";
-import sqlite3 from "sqlite3";
-import DBPATH from "../shared/dbConnection.js";
+import createEtapa from "./useCases/create.usecase.js";
+import getSpecificEtapa from "./useCases/getSpecific.usecase.js";
+import deleteEtapa from "./useCases/delete.usecase.js";
+import getAllCamposFromEtapa from "./useCases/getAllCamposFromEtapa.usecase.js";
 
 const etapaRouter = Router();
 
-//TABELA ETAPA - INSERE
+// TABELA ETAPA
 // Insere um registro (é o C do CRUD - Create)
-etapaRouter.post("/", (req, res) => {
+etapaRouter.post("/", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
 
-  var db = new sqlite3.Database(DBPATH); // Abre o banco
-  let sql =
-    "INSERT INTO ETAPA (protocolo_id) VALUES (" + req.body.protocolo_id + ")";
-  console.log(sql);
-  db.run(sql, [], (err) => {
-    if (err) {
-      throw err;
-    }
-  });
-  res.write('<p>ETAPA INSERIDA COM SUCESSO!</p><a href="/">VOLTAR</a>');
-  db.close(); // Fecha o banco
+  const result = await createEtapa(req.body);
+
+  res.json(result[0]);
   res.end();
 });
 
-// Retorna todos registros (é o R do CRUD - Read)
-etapaRouter.get("/", (req, res) => {
+// Retorna todas as etapas de um protocolo especifico (é o R do CRUD - Read)
+etapaRouter.get("/:etapa_id", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
-  var db = new sqlite3.Database(DBPATH); // Abre o banco
-  var sql = "SELECT * FROM ETAPA WHERE etapa_id = " + req.query.etapa_id;
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      throw err;
-    }
-    res.json(rows);
-  });
-  db.close(); // Fecha o banco
+
+  const result = await getSpecificEtapa(req.params.etapa_id);
+
+  res.json(result[0]);
+  res.end();
 });
 
-// Atualiza um registro (é o U do CRUD - Update)
-etapaRouter.put("/", (req, res) => {
+// Retorna todas as etapas de um protocolo especifico (é o R do CRUD - Read)
+etapaRouter.get("/:etapa_id/campos", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
-  sql =
-    "UPDATE ETAPA SET etapa_id ='" +
-    req.body.etapa_id +
-    "' WHERE amostra_id='" +
-    req.body.etapa_id +
-    "'";
-  console.log(sql);
-  var db = new sqlite3.Database(DBPATH); // Abre o banco
-  db.run(sql, [], (err) => {
-    if (err) {
-      throw err;
-    }
-    res.json(sql);
-    res.end();
-  });
-  res.write('<p>ETAPA ATUALIZADO COM SUCESSO!</p><a href="/">VOLTAR</a>');
-  db.close(); // Fecha o banco
+
+  const result = await getAllCamposFromEtapa(req.params.etapa_id);
+
+  res.json(result[0]);
+  res.end();
 });
 
 // Exclui um registro (é o D do CRUD - Delete)
-etapaRouter.delete("/", (req, res) => {
+etapaRouter.delete("/:etapa_id", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
-  sql = "DELETE FROM ETAPA WHERE etapa_id='" + req.query.etapa_id + "'";
-  console.log(sql);
-  var db = new sqlite3.Database(DBPATH); // Abre o banco
-  db.run(sql, [], (err) => {
-    if (err) {
-      throw err;
-    }
-    res.write('<p>ETAPA REMOVIDA COM SUCESSO!</p><a href="/">VOLTAR</a>');
-    res.end();
-  });
-  db.close(); // Fecha o banco
+
+  const result = await deleteEtapa(req.params.etapa_id);
+
+  res.json(result[0]);
+  res.end();
 });
 
 export default etapaRouter;

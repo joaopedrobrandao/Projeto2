@@ -1,12 +1,15 @@
 import { Router } from "express";
-import sqlite3 from "sqlite3";
-import DBPATH from "../shared/dbConnection.js";
 import createProtocolo from "./useCases/create.usecase.js";
+import getAllProtocolos from "./useCases/getAll.usecase.js";
+import getSpecificProtocolo from "./useCases/getSpecific.usecase.js";
+import updateProtocolo from "./useCases/update.usecase.js";
+import deleteProtocolo from "./useCases/delete.usecase.js";
+import getAllEtapasFromProtocolo from "./useCases/getAllEtapasFromProtocolo.usecase.js";
 
 const protocolosRouter = Router();
 
 // TABELA PROTOCOLO
-// Insere um registro (é o C do CRUD - Create)
+// Insere um protocolo (é o C do CRUD - Create)
 protocolosRouter.post("/", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -17,88 +20,59 @@ protocolosRouter.post("/", async (req, res) => {
   res.end();
 });
 
-// Retorna todos registros (é o R do CRUD - Read)
-protocolosRouter.get("/", (req, res) => {
+// Retorna todos protocolos (é o R do CRUD - Read)
+protocolosRouter.get("/", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
 
-  let db = new sqlite3.Database(DBPATH); // Abre o banco
-  let sql = "SELECT * FROM PROTOCOLO";
+  const result = await getAllProtocolos();
 
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      throw err;
-    }
-    res.json(rows);
-  });
-
-  db.close(); // Fecha o banco
+  res.json(result);
+  res.end();
 });
 
-// Retorna registro especifico (é o R do CRUD - Read)
-protocolosRouter.get("/:protocolo_id", (req, res) => {
+// Retorna protocolo especifico (é o R do CRUD - Read)
+protocolosRouter.get("/:protocolo_id", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
 
-  let db = new sqlite3.Database(DBPATH); // Abre o banco
-  let sql =
-    "SELECT * FROM PROTOCOLO WHERE protocolo_id = " + req.query.protocolo_id;
+  const result = await getSpecificProtocolo(req.params.protocolo_id);
 
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      throw err;
-    }
-    res.json(rows);
-  });
-  db.close(); // Fecha o banco
+  res.json(result);
+  res.end();
 });
 
-// Atualiza um registro (é o U do CRUD - Update)
-protocolosRouter.put("/", (req, res) => {
-  console.log("aaaaaaaaa");
+// Retorna protocolo especifico e suas etapas (é o R do CRUD - Read)
+protocolosRouter.get("/:protocolo_id/etapas", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
 
-  let sql =
-    "UPDATE PROTOCOLO SET nome='" +
-    req.body.nome +
-    "', foto_url='" +
-    req.body.foto_url +
-    "' , ativo=" +
-    req.body.ativo +
-    " WHERE protocolo_id=" +
-    req.query.protocolo_id +
-    " RETURNING *";
-  var db = new sqlite3.Database(DBPATH); // Abre o banco
+  const result = await getAllEtapasFromProtocolo(req.params.protocolo_id);
 
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      throw err;
-    }
-    res.json(rows[0]);
-    res.end();
-  });
-  db.close(); // Fecha o banco
+  res.json(result);
+  res.end();
 });
 
-// Exclui um registro (é o D do CRUD - Delete)
-protocolosRouter.delete("/", (req, res) => {
+// Atualiza um protocolo (é o U do CRUD - Update)
+protocolosRouter.put("/:protocolo_id", async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Access-Control-Allow-Origin", "*");
 
-  let sql =
-    "DELETE FROM PROTOCOLO WHERE protocolo_id=" + req.query.protocolo_id;
-  var db = new sqlite3.Database(DBPATH); // Abre o banco
+  const result = await updateProtocolo(req.params.protocolo_id, req.body);
 
-  db.run(sql, [], (err) => {
-    if (err) {
-      throw err;
-    }
-    res.write('<p>PROTOCOLO REMOVIDO COM SUCESSO!</p><a href="/">VOLTAR</a>');
-    res.end();
-  });
+  res.json(result[0]);
+  res.end();
+});
 
-  db.close(); // Fecha o banco
+// Exclui um protocolo (é o D do CRUD - Delete)
+protocolosRouter.delete("/:protocolo_id", async (req, res) => {
+  res.statusCode = 200;
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  const result = await deleteProtocolo(req.params.protocolo_id);
+
+  res.json(result);
+  res.end();
 });
 
 export default protocolosRouter;
