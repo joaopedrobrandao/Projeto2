@@ -1,16 +1,10 @@
 import sqlite3 from "sqlite3";
 import DBPATH from "../../shared/dbConnection.js";
 
-const createCampo = async (data) => {
+const deleteCampo = async (campo_id) => {
   let db = new sqlite3.Database(DBPATH); // Abre o banco
-  let sql =
-    "INSERT INTO campo (etapa_id, categoria, nome) VALUES (" +
-    data.etapa_id +
-    ", '" +
-    data.categoria +
-    "', '" +
-    data.nome +
-    "') RETURNING *";
+
+  let sql = "DELETE FROM CAMPO WHERE campo_id=" + campo_id + " RETURNING *";
 
   const query = new Promise((resolve, reject) => {
     db.all(sql, [], (err, rows) => {
@@ -27,10 +21,10 @@ const createCampo = async (data) => {
   db.close(); // Fecha o banco
 
   if (response) {
-    return response;
+    return response[0];
   }
 
   return null;
 };
 
-export default createCampo;
+export default deleteCampo;
