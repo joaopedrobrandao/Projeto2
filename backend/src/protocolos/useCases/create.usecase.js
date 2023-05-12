@@ -1,8 +1,6 @@
-import sqlite3 from "sqlite3";
-import DBPATH from "../../shared/dbConnection.js";
+import queryToDb from "../../shared/utils/queryToDb.js";
 
 const createProtocolo = async (data) => {
-  var db = new sqlite3.Database(DBPATH); // Abre o banco
   let sql =
     "INSERT INTO PROTOCOLO (nome, foto_url, ativo) VALUES ('" +
     data.nome +
@@ -12,18 +10,7 @@ const createProtocolo = async (data) => {
     data.ativo +
     ") RETURNING *";
 
-  const query = new Promise((resolve, reject) => {
-    db.all(sql, [], (err, rows) => {
-      if (err) {
-        reject(err);
-      }
-
-      resolve(rows);
-    });
-  });
-
-  const response = await query;
-  db.close(); // Fecha o banco
+    const response = await queryToDb(sql);
 
   if (response) {
     return response[0];
